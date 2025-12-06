@@ -1,42 +1,3 @@
-# # This workflow will install Python dependencies, run tests and lint with a single version of Python
-# # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-# name: Python application
-
-# on:
-#   push:
-#     branches: [ "main" ]
-#   pull_request:
-#     branches: [ "main" ]
-
-# permissions:
-#   contents: read
-
-# jobs:
-#   build:
-
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - uses: actions/checkout@v4
-#     - name: Set up Python 3.10
-#       uses: actions/setup-python@v3
-#       with:
-#         python-version: "3.10"
-#     - name: Install dependencies
-#       run: |
-#         python -m pip install --upgrade pip
-#         pip install flake8 pytest
-#         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-#     - name: Lint with flake8
-#       run: |
-#         # stop the build if there are Python syntax errors or undefined names
-#         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-#         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-#         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-#     - name: Test with pytest
-#       run: |
-#         pytest
 name: Python + Docker CI/CD
 
 on:
@@ -47,13 +8,13 @@ on:
 
 permissions:
   contents: read
-  packages: write   # مهم جداً حتى تقدر تدفع Docker image للـ Registry
+  packages: write     # يسمح بدفع Docker Image إلى GHCR
 
 jobs:
 
-  # -------------------------
+  # -----------------------------------------
   # Step 1 — Python CI (Lint + Tests)
-  # -------------------------
+  # -----------------------------------------
   test:
     runs-on: ubuntu-latest
 
@@ -80,27 +41,33 @@ jobs:
       run: pytest -v
 
 
-  # -------------------------
+  # -----------------------------------------
   # Step 2 — Build + Push Docker Image
   # Only runs if tests passed
-  # -------------------------
+  # -----------------------------------------
   docker:
     runs-on: ubuntu-latest
-    needs: test   # مهم جداً — لا تبني Docker إلا بعد نجاح الاختبارات
+    needs: test   # لا يبني Docker إلا إذا نجح Job التست
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Login to GitHub Container Registry
+    - name: Login to GitHub Container Registry (GHCR)
       run: |
         echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
+    # تحويل اسم صاحب الريبو إلى lowercase
+    - name: Prepare IMAGE_NAME
+      id: prep
+      run: |
+        OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        IMAGE_NAME="ghcr.io/$OWNER/agentic-ai-nl2sql:latest"
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
+
     - name: Build Docker image
       run: |
-        IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/agentic-ai-nl2sql:latest
-        docker build -t $IMAGE_NAME .
+        docker build -t ${{ steps.prep.outputs.IMAGE_NAME }} .
 
     - name: Push Docker image
       run: |
-        IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/agentic-ai-nl2sql:latest
-        docker push $IMAGE_NAME
+        docker push ${{ steps.prep.outputs.IMAGE_NAME }}
