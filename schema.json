@@ -1,0 +1,1030 @@
+{
+  "actor": {
+    "description": "Represents a movie actor/actress.",
+    "fields": {
+      "actor_id": {
+        "type": "integer",
+        "description": "Unique identifier of the actor.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "first_name": {
+        "type": "string",
+        "description": "Actor first name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_name": {
+        "type": "string",
+        "description": "Actor last name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated timestamp.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "actor_info": {
+    "description": "VIEW: denormalized info per actor (id, name, film list).",
+    "fields": {
+      "actor_id": {
+        "type": "integer",
+        "description": "Actor id.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "first_name": {
+        "type": "string",
+        "description": "First name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_name": {
+        "type": "string",
+        "description": "Last name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "film_info": {
+        "type": "string",
+        "description": "Concatenated films info.",
+        "constraints": []
+      }
+    }
+  },
+  "address": {
+    "description": "Represents a street address.",
+    "fields": {
+      "address_id": {
+        "type": "integer",
+        "description": "Address id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "address": {
+        "type": "string",
+        "description": "Address line 1.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "address2": {
+        "type": "string",
+        "description": "Address line 2.",
+        "constraints": []
+      },
+      "district": {
+        "type": "string",
+        "description": "District/area.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "city_id": {
+        "type": "integer",
+        "description": "FK to city.city_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "postal_code": {
+        "type": "string",
+        "description": "Postal/ZIP code.",
+        "constraints": []
+      },
+      "phone": {
+        "type": "string",
+        "description": "Phone number.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "location": {
+        "type": "string",
+        "description": "Geometry/point (serialized).",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "category": {
+    "description": "Represents a film category/genre.",
+    "fields": {
+      "category_id": {
+        "type": "integer",
+        "description": "Category id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "name": {
+        "type": "string",
+        "description": "Category name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "city": {
+    "description": "Represents a city.",
+    "fields": {
+      "city_id": {
+        "type": "integer",
+        "description": "City id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "city": {
+        "type": "string",
+        "description": "City name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "country_id": {
+        "type": "integer",
+        "description": "FK to country.country_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "country": {
+    "description": "Represents a country.",
+    "fields": {
+      "country_id": {
+        "type": "integer",
+        "description": "Country id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "country": {
+        "type": "string",
+        "description": "Country name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "customer": {
+    "description": "Represents a customer/person who rents films.",
+    "fields": {
+      "customer_id": {
+        "type": "integer",
+        "description": "Customer id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "store_id": {
+        "type": "integer",
+        "description": "FK to store.storeId (home store).",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "first_name": {
+        "type": "string",
+        "description": "First name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_name": {
+        "type": "string",
+        "description": "Last name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "email": {
+        "type": "string",
+        "description": "Email address.",
+        "constraints": []
+      },
+      "address_id": {
+        "type": "integer",
+        "description": "FK to address.address_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "active": {
+        "type": "boolean",
+        "description": "Active flag.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "create_date": {
+        "type": "datetime",
+        "description": "When the customer was created.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": []
+      }
+    }
+  },
+  "customer_list": {
+    "description": "VIEW: denormalized customer directory.",
+    "fields": {
+      "id": {
+        "type": "integer",
+        "description": "Customer id.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "name": {
+        "type": "string",
+        "description": "Full name.",
+        "constraints": []
+      },
+      "address": {
+        "type": "string",
+        "description": "Address line 1.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "zip code": {
+        "type": "string",
+        "description": "ZIP code.",
+        "constraints": []
+      },
+      "phone": {
+        "type": "string",
+        "description": "Phone number.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "city": {
+        "type": "string",
+        "description": "City name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "country": {
+        "type": "string",
+        "description": "Country name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "notes": {
+        "type": "string",
+        "description": "Short notes.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "sid": {
+        "type": "integer",
+        "description": "Store id.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "film": {
+    "description": "Represents a movie/film title.",
+    "fields": {
+      "film_id": {
+        "type": "integer",
+        "description": "Film id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "title": {
+        "type": "string",
+        "description": "Film title.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "description": {
+        "type": "string",
+        "description": "Film synopsis.",
+        "constraints": []
+      },
+      "release_year": {
+        "type": "integer",
+        "description": "Release year (YYYY).",
+        "constraints": []
+      },
+      "language_id": {
+        "type": "integer",
+        "description": "FK to language.language_id (original language).",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "original_language_id": {
+        "type": "integer",
+        "description": "FK to language.language_id (spoken/original).",
+        "constraints": [
+          "Foreign Key"
+        ]
+      },
+      "rental_duration": {
+        "type": "integer",
+        "description": "Rental days.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "rental_rate": {
+        "type": "decimal",
+        "description": "Rental price per period.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "length": {
+        "type": "integer",
+        "description": "Running time (minutes).",
+        "constraints": []
+      },
+      "replacement_cost": {
+        "type": "decimal",
+        "description": "Replacement value.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "rating": {
+        "type": "string",
+        "description": "Rating (G/PG/PG-13/R/NC-17).",
+        "constraints": []
+      },
+      "special_features": {
+        "type": "string",
+        "description": "Set/list of features.",
+        "constraints": []
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "film_actor": {
+    "description": "Bridge between films and actors (many-to-many).",
+    "fields": {
+      "actor_id": {
+        "type": "integer",
+        "description": "FK to actor.actor_id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "film_id": {
+        "type": "integer",
+        "description": "FK to film.film_id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "film_category": {
+    "description": "Bridge between films and categories.",
+    "fields": {
+      "film_id": {
+        "type": "integer",
+        "description": "FK to film.film_id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "category_id": {
+        "type": "integer",
+        "description": "FK to category.category_id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "film_list": {
+    "description": "VIEW: film catalog with category, price, length, rating, and actors.",
+    "fields": {
+      "fid": {
+        "type": "integer",
+        "description": "Film id.",
+        "constraints": []
+      },
+      "title": {
+        "type": "string",
+        "description": "Film title.",
+        "constraints": []
+      },
+      "description": {
+        "type": "string",
+        "description": "Synopsis.",
+        "constraints": []
+      },
+      "category": {
+        "type": "string",
+        "description": "Category name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "price": {
+        "type": "decimal",
+        "description": "Rental price.",
+        "constraints": []
+      },
+      "length": {
+        "type": "integer",
+        "description": "Running time.",
+        "constraints": []
+      },
+      "rating": {
+        "type": "string",
+        "description": "Content rating.",
+        "constraints": []
+      },
+      "actors": {
+        "type": "string",
+        "description": "Concatenated actors.",
+        "constraints": []
+      }
+    }
+  },
+  "film_text": {
+    "description": "Search-optimized copy of film titles and descriptions.",
+    "fields": {
+      "film_id": {
+        "type": "integer",
+        "description": "Film id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "title": {
+        "type": "string",
+        "description": "Film title.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "description": {
+        "type": "string",
+        "description": "Film synopsis.",
+        "constraints": []
+      }
+    }
+  },
+  "inventory": {
+    "description": "Represents a physical film copy available in a store.",
+    "fields": {
+      "inventory_id": {
+        "type": "integer",
+        "description": "Inventory id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "film_id": {
+        "type": "integer",
+        "description": "FK to film.film_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "store_id": {
+        "type": "integer",
+        "description": "FK to store.store_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "language": {
+    "description": "Represents a language.",
+    "fields": {
+      "language_id": {
+        "type": "integer",
+        "description": "Language id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "name": {
+        "type": "string",
+        "description": "Language name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "nicer_but_slower_film_list": {
+    "description": "VIEW: alternative film list (pretty but slower).",
+    "fields": {
+      "fid": {
+        "type": "integer",
+        "description": "Film id.",
+        "constraints": []
+      },
+      "title": {
+        "type": "string",
+        "description": "Title.",
+        "constraints": []
+      },
+      "description": {
+        "type": "string",
+        "description": "Synopsis.",
+        "constraints": []
+      },
+      "category": {
+        "type": "string",
+        "description": "Category.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "price": {
+        "type": "decimal",
+        "description": "Rental price.",
+        "constraints": []
+      },
+      "length": {
+        "type": "integer",
+        "description": "Running time.",
+        "constraints": []
+      },
+      "rating": {
+        "type": "string",
+        "description": "Rating.",
+        "constraints": []
+      },
+      "actors": {
+        "type": "string",
+        "description": "Actors list.",
+        "constraints": []
+      }
+    }
+  },
+  "payment": {
+    "description": "Represents a payment made by a customer (per rental).",
+    "fields": {
+      "payment_id": {
+        "type": "integer",
+        "description": "Payment id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "customer_id": {
+        "type": "integer",
+        "description": "FK to customer.customer_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "staff_id": {
+        "type": "integer",
+        "description": "FK to staff.staff_id (who collected payment).",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "rental_id": {
+        "type": "integer",
+        "description": "FK to rental.rental_id (optional).",
+        "constraints": [
+          "Foreign Key"
+        ]
+      },
+      "amount": {
+        "type": "decimal",
+        "description": "Payment amount.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "payment_date": {
+        "type": "datetime",
+        "description": "Payment timestamp.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": []
+      }
+    }
+  },
+  "rental": {
+    "description": "Represents a rental transaction of an inventory item by a customer.",
+    "fields": {
+      "rental_id": {
+        "type": "integer",
+        "description": "Rental id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "rental_date": {
+        "type": "datetime",
+        "description": "When the rental started.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "inventory_id": {
+        "type": "integer",
+        "description": "FK to inventory.inventory_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "customer_id": {
+        "type": "integer",
+        "description": "FK to customer.customer_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "return_date": {
+        "type": "datetime",
+        "description": "When the item was returned.",
+        "constraints": []
+      },
+      "staff_id": {
+        "type": "integer",
+        "description": "FK to staff.staff_id (who handled rental).",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "sales_by_film_category": {
+    "description": "VIEW: aggregated total sales by film category.",
+    "fields": {
+      "category": {
+        "type": "string",
+        "description": "Category name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "total_sales": {
+        "type": "decimal",
+        "description": "Total sales amount.",
+        "constraints": []
+      }
+    }
+  },
+  "sales_by_store": {
+    "description": "VIEW: aggregated total sales per store and manager.",
+    "fields": {
+      "store": {
+        "type": "string",
+        "description": "Store display label.",
+        "constraints": []
+      },
+      "manager": {
+        "type": "string",
+        "description": "Manager name.",
+        "constraints": []
+      },
+      "total_sales": {
+        "type": "decimal",
+        "description": "Total sales amount.",
+        "constraints": []
+      }
+    }
+  },
+  "staff": {
+    "description": "Represents a staff member/employee.",
+    "fields": {
+      "staff_id": {
+        "type": "integer",
+        "description": "Staff id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "first_name": {
+        "type": "string",
+        "description": "First name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "last_name": {
+        "type": "string",
+        "description": "Last name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "address_id": {
+        "type": "integer",
+        "description": "FK to address.address_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "picture": {
+        "type": "string",
+        "description": "Avatar/blob ref.",
+        "constraints": []
+      },
+      "email": {
+        "type": "string",
+        "description": "Email.",
+        "constraints": []
+      },
+      "store_id": {
+        "type": "integer",
+        "description": "FK to store.store_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "active": {
+        "type": "boolean",
+        "description": "Active flag.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "username": {
+        "type": "string",
+        "description": "Login username.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "password": {
+        "type": "string",
+        "description": "Hashed password.",
+        "constraints": []
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "staff_list": {
+    "description": "VIEW: denormalized staff directory.",
+    "fields": {
+      "id": {
+        "type": "integer",
+        "description": "Staff id.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "name": {
+        "type": "string",
+        "description": "Full name.",
+        "constraints": []
+      },
+      "address": {
+        "type": "string",
+        "description": "Address line 1.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "zip code": {
+        "type": "string",
+        "description": "ZIP code.",
+        "constraints": []
+      },
+      "phone": {
+        "type": "string",
+        "description": "Phone number.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "city": {
+        "type": "string",
+        "description": "City name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "country": {
+        "type": "string",
+        "description": "Country name.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "sid": {
+        "type": "integer",
+        "description": "Store id.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "store": {
+    "description": "Represents a physical store location.",
+    "fields": {
+      "store_id": {
+        "type": "integer",
+        "description": "Store id.",
+        "constraints": [
+          "Primary Key",
+          "Not Null"
+        ]
+      },
+      "manager_staff_id": {
+        "type": "integer",
+        "description": "FK to staff.staff_id (store manager).",
+        "constraints": [
+          "Not Null",
+          "Unique",
+          "Foreign Key"
+        ]
+      },
+      "address_id": {
+        "type": "integer",
+        "description": "FK to address.address_id.",
+        "constraints": [
+          "Not Null",
+          "Foreign Key"
+        ]
+      },
+      "last_update": {
+        "type": "datetime",
+        "description": "Row last updated.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  },
+  "vm_films": {
+    "description": "VIEW: aggregated count of films per category.",
+    "fields": {
+      "film_count": {
+        "type": "integer",
+        "description": "Number of films.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "category_id": {
+        "type": "integer",
+        "description": "Category id.",
+        "constraints": [
+          "Not Null"
+        ]
+      },
+      "name": {
+        "type": "string",
+        "description": "Category name.",
+        "constraints": [
+          "Not Null"
+        ]
+      }
+    }
+  }
+}
