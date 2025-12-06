@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 # import core pipeline
-from nl2sql_core import nl2sql_with_acl
+from .nl2sql_core import nl2sql_with_acl
 
 
 app = FastAPI(
