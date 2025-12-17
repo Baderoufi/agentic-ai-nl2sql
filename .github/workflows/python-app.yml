@@ -1,4 +1,4 @@
-name: Python + Docker CI/CD
+name: CI/CD - NL2SQL (Dev → Test → Prod)
 
 on:
   push:
@@ -12,69 +12,128 @@ on:
       - test
       - main
 
-
 permissions:
   contents: read
-  packages: write     # يسمح بدفع Docker Image إلى GHCR
+  packages: write
 
 jobs:
 
-  # -----------------------------------------
-  # Step 1 — Python CI (Lint + Tests)
-  # -----------------------------------------
+  # =====================================================
+  # 1) CI: Lint + Tests
+  # =====================================================
   test:
+    name: CI - Lint & Tests
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest flake8
 
-    - name: Lint with flake8
-      run: |
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Lint (flake8)
+        run: |
+          flake8 . \
+            --count \
+            --select=E9,F63,F7,F82 \
+            --show-source \
+            --statistics
+          flake8 . \
+            --count \
+            --exit-zero \
+            --max-complexity=10 \
+            --max-line-length=127 \
+            --statistics
 
-    - name: Test with pytest
-      run: pytest -v
+      - name: Run tests (pytest)
+        run: pytest -v
 
 
-  # -----------------------------------------
-  # Step 2 — Build + Push Docker Image
-  # Only runs if tests passed
-  # -----------------------------------------
+  # =====================================================
+  # 2) Build & Push Docker Image (tag by branch)
+  # =====================================================
   docker:
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
-    needs: test   # لا يبني Docker إلا إذا نجح Job التست
+    needs: test
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Login to GitHub Container Registry (GHCR)
-      run: |
-        echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Login to GitHub Container Registry (GHCR)
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" \
+          | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-    # تحويل اسم صاحب الريبو إلى lowercase
-    - name: Prepare IMAGE_NAME
-      id: prep
-      run: |
-        OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-        IMAGE_NAME="ghcr.io/$OWNER/agentic-ai-nl2sql:latest"
-        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
+      - name: Prepare IMAGE_NAME (dev / test / prod)
+        id: prep
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
 
-    - name: Build Docker image
-      run: |
-        docker build -t ${{ steps.prep.outputs.IMAGE_NAME }} .
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            TAG="prod"
+          elif [ "${{ github.ref }}" = "refs/heads/test" ]; then
+            TAG="test"
+          else
+            TAG="dev"
+          fi
 
-    - name: Push Docker image
-      run: |
-        docker push ${{ steps.prep.outputs.IMAGE_NAME }}
+          IMAGE_NAME="ghcr.io/$OWNER/agentic-ai-nl2sql:$TAG"
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Using image: $IMAGE_NAME"
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ steps.prep.outputs.IMAGE_NAME }} .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ steps.prep.outputs.IMAGE_NAME }}
+
+
+  # =====================================================
+  # 3) CD: Deploy to Production (main only)
+  # =====================================================
+  deploy-prod:
+    name: CD - Deploy to Production
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            set -e
+
+            echo "🚀 Deploying NL2SQL to Production"
+
+            docker pull ghcr.io/${{ github.repository_owner }}/agentic-ai-nl2sql:prod
+
+            docker stop nl2sql-prod || true
+            docker rm nl2sql-prod || true
+
+            docker run -d \
+              --name nl2sql-prod \
+              --network nl2sql-net \
+              --env-file /opt/nl2sql/.env \
+              -v /opt/nl2sql/vector_sql_schema3:/data/vector_sql_schema3 \
+              -p 8080:8000 \
+              --restart unless-stopped \
+              ghcr.io/${{ github.repository_owner }}/agentic-ai-nl2sql:prod
+
+            echo "✅ Deployment finished successfully"
